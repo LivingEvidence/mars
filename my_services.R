@@ -9,7 +9,7 @@ library(jsonlite)
 #* @param cfg The configuration to be used in the analysis
 #* @post /INCD
 function(data, cfg){
-    list(
+    toJSON(list(
         incdma = c(),
         primma = c(),
         cumuma = c(),
@@ -17,7 +17,7 @@ function(data, cfg){
             jsonlite = packageVersion('jsonlite'),
             meta = packageVersion('meta')
         )
-    )
+    ), pretty=TRUE, force=TRUE)
 }
 
 
