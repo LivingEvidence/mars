@@ -7,7 +7,7 @@ library(jsonlite)
 #* Run incidence analysis on the given input data frame
 #* @param data The dataframe to be analyzed
 #* @param cfg The configuration to be used in the analysis
-#* @get /INCD
+#* @post /INCD
 function(data, cfg){
     list(
         incdma = c(),
