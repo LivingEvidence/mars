@@ -1,3 +1,41 @@
+library(meta)
+library(jsonlite)
+
+###########################################################
+# Incidence Analysis
+###########################################################
+#* Run incidence analysis on the given input data frame
+#* @param data The dataframe to be analyzed
+#* @param cfg The configuration to be used in the analysis
+#* @get /INCD
+function(data, cfg){
+    list(
+        incdma = c(),
+        primma = c(),
+        cumuma = c(),
+        version = list(
+            jsonlite = packageVersion('jsonlite'),
+            meta = packageVersion('meta')
+        )
+    )
+}
+
+
+###########################################################
+# Pairwise meta-analysis
+###########################################################
+
+
+###########################################################
+# Network meta-analysis
+###########################################################
+
+
+
+###########################################################
+# Example services
+###########################################################
+
 #* Echo the parameter that was sent in
 #* @param msg The message to echo back.
 #* @get /echo
