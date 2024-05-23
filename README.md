@@ -4,16 +4,26 @@ Run meta-analysis using Rscript based on httr and plumber.
 
 ## Development
 
-First, install R and RStudio.
+First, install R and it's better to use a virtual environment to manage it:
+
+```
+conda create --name mars_r44 r-essentials r-base
+conda activate mars_r44
+```
 
 Second, install the following packages.
 
-Install `sodium-dev`:
+Install `sodium-dev` from system:
 
 ```
 sudo apt install libsodium-dev
 ```
 
+Install the following packages and tools
+
+```
+conda install cmake
+```
 
 Then, install R packages
 
@@ -22,7 +32,14 @@ install.packages('httr')
 install.packages('plumber')
 ```
 
-Then, install all R packages related to meta-analysis. If anything works, you can run the following command to start the web service:
+Then, install all R packages related to meta-analysis. 
+
+```
+install.packages('meta')
+```
+
+
+If anything works, you can run the following command to start the web service:
 
 ```
 Rscript main.R
