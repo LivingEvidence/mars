@@ -24,7 +24,6 @@ function(data, cfg){
 
     ret_str <- toJSON(list(
         incdma = results_incd,
-        summary_incd = summary_incd,
         primma = c(),
         cumuma = c(),
         version = list(
