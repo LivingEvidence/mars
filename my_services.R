@@ -9,15 +9,31 @@ library(jsonlite)
 #* @param cfg The configuration to be used in the analysis
 #* @post /INCD
 function(data, cfg){
-    toJSON(list(
-        incdma = c(),
+    results_incd <- metaprop(
+        Et, 
+        Nt,  
+        data = data, 
+        studlab = study, 
+        sm = cfg$sm, 
+        method = cfg$pooling_method, 
+        method.tau = cfg$tau_estimation_method, 
+        hakn = cfg$hakn_adjustment,
+        adhoc.hakn = cfg$adhoc_hakn,
+        backtransf = TRUE
+    )
+
+    ret_str <- toJSON(list(
+        incdma = results_incd,
+        summary_incd = summary_incd,
         primma = c(),
         cumuma = c(),
         version = list(
             jsonlite = packageVersion('jsonlite'),
             meta = packageVersion('meta')
         )
-    ), pretty=TRUE, force=TRUE)
+    ), force=TRUE)
+
+    fromJSON(ret_str)
 }
 
 
