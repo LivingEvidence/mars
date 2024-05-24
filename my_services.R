@@ -8,31 +8,33 @@ library(jsonlite)
 #* @param data The dataframe to be analyzed
 #* @param cfg The configuration to be used in the analysis
 #* @post /INCD
-function(data, cfg){
-    results_incd <- metaprop(
-        Et, 
-        Nt,  
-        data = data, 
-        studlab = study, 
-        sm = cfg$sm, 
-        method = cfg$pooling_method, 
-        method.tau = cfg$tau_estimation_method, 
-        hakn = cfg$hakn_adjustment,
-        adhoc.hakn = cfg$adhoc_hakn,
-        backtransf = TRUE
+incd <- function(data, cfg){
+  rst <- metaprop(
+    Et,
+    Nt,
+    data = data,
+    studlab = study,
+    sm = cfg$sm,
+    method = cfg$pooling_method,
+    method.tau = cfg$tau_estimation_method,
+    hakn = cfg$hakn_adjustment,
+    adhoc.hakn = cfg$adhoc_hakn,
+    backtransf = TRUE
+  )
+
+  # run backtransf here
+
+  ret_str <- toJSON(list(
+    incdma = rst,
+    primma = c(),
+    cumuma = c(),
+    version = list(
+      jsonlite = packageVersion("jsonlite"),
+      meta = packageVersion("meta")
     )
+  ), force = TRUE)
 
-    ret_str <- toJSON(list(
-        incdma = results_incd,
-        primma = c(),
-        cumuma = c(),
-        version = list(
-            jsonlite = packageVersion('jsonlite'),
-            meta = packageVersion('meta')
-        )
-    ), force=TRUE)
-
-    fromJSON(ret_str)
+  fromJSON(ret_str)
 }
 
 
@@ -54,8 +56,8 @@ function(data, cfg){
 #* Echo the parameter that was sent in
 #* @param msg The message to echo back.
 #* @get /echo
-function(msg=""){
-    list(msg = paste0("The message is: '", msg, "'"))
+function(msg = ""){
+  list(msg = paste0("The message is: '", msg, "'"))
 }
 
 #* Plot out data from the iris dataset
@@ -63,17 +65,19 @@ function(msg=""){
 #* @get /plot
 #* @serializer png
 function(spec){
-    myData <- iris
-    title <- "All Species"
+  data <- iris
+  title <- "All Species"
 
-    # Filter if the species was specified
-    if (!missing(spec)) {
-        title <- paste0("Only the '", spec, "' Species")
-        myData <- subset(iris, Species == spec)
-    }
+  # Filter if the species was specified
+  if (!missing(spec)) {
+    title <- paste0("Only the '", spec, "' Species")
+    data <- subset(iris, Species == spec)
+  }
 
-    plot(
-        myData$Sepal.Length, myData$Petal.Length,
-        main=title, xlab="Sepal Length", ylab="Petal Length"
-    )
+  plot(
+    data$Sepal.Length, data$Petal.Length,
+    main = title,
+    xlab = "Sepal Length",
+    ylab = "Petal Length"
+  )
 }
