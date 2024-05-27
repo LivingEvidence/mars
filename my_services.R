@@ -1,10 +1,10 @@
 library(meta)
-library(jsonlite)
 
 ###########################################################
 # Incidence Analysis
 ###########################################################
 #* Run incidence analysis on the given input data frame
+#* @serializer unboxedJSON
 #* @param data The dataframe to be analyzed
 #* @param cfg The configuration to be used in the analysis
 #* @post /INCD
@@ -25,17 +25,24 @@ incd <- function(data, cfg){
   # run backtransf here
   rst <- backtransf_pwma(rst)
 
-  ret_str <- toJSON(list(
+  # a temp result
+  j <- list(
     incdma = rst,
     primma = c(),
-    cumuma = c(),
-    version = list(
-      jsonlite = packageVersion("jsonlite"),
-      meta = packageVersion("meta")
-    )
-  ), force = TRUE)
+    cumuma = c()
+  )
 
-  fromJSON(ret_str)
+  # convert to the format expected by the client
+  ret <- list(
+    submission_id = format(Sys.time(), "%Y%m%d%H%M%OS"),
+    params = cfg,
+    success = TRUE,
+    data = list(
+      incdma = meta_trans_metaprop(j, cfg)
+    )
+  )
+
+  return(ret)
 }
 
 
@@ -43,6 +50,14 @@ incd <- function(data, cfg){
 # Pairwise meta-analysis
 ###########################################################
 
+#* Run pairwise meta-analysis on the given input data frame
+#* @serializer unboxedJSON
+#* @param data The dataframe to be analyzed
+#* @param cfg The configuration to be used in the analysis
+#* @post /PWMA
+pwma <- function(data, cfg) {
+
+}
 
 ###########################################################
 # Network meta-analysis
@@ -110,6 +125,7 @@ backtransf_pwma <- function(rst) {
   }
 
   # all values needs to be backtransformed
+  # for each study, just use its own n
   rst$bt.TE <- backtransf(rst$TE, rst$sm, rst$n, rst$n)
   rst$bt.lower <- backtransf(rst$lower, rst$sm, rst$n, rst$n)
   rst$bt.upper <- backtransf(rst$upper, rst$sm, rst$n, rst$n)
@@ -137,11 +153,65 @@ backtransf_pwma <- function(rst) {
 #' @description Reformat the results of a pairwise meta-analysis
 #' @param ret The result of the pairwise meta-analysis
 #' @return The reformatted result of the pairwise meta-analysis
-reformat <- function(ret){
-  ret2 = list(
-    model = list(),
-    stus = list(),
-    rs = list()
+meta_trans_metaprop <- function(rst, cfg){
+  data <- rst$incdma
+  ret <- list(
+    model = list(
+      random = list(
+        name = "Random effects model",
+        E = sum(data$event)[1],
+        N = sum(data$n)[1],
+        TE = data$TE.random[1],
+        seTE = data$seTE.random[1],
+        lower = data$lower.random[1],
+        upper = data$upper.random[1],
+
+        bt_TE = data$bt.TE.random[1],
+        bt_lower = data$bt.lower.random[1],
+        bt_upper = data$bt.upper.random[1],
+        w = 1
+      ),
+      fixed = list(
+        name = "Fixed effects model",
+        E = sum(data$event)[1],
+        N = sum(data$n)[1],
+        TE = data$TE.fixed[1],
+        seTE = data$seTE.fixed[1],
+        lower = data$lower.fixed[1],
+        upper = data$upper.fixed[1],
+
+        bt_TE = data$bt.TE.fixed[1],
+        bt_lower = data$bt.lower.fixed[1],
+        bt_upper = data$bt.upper.fixed[1],
+        w = 1
+      )
+    ),
+    heterogeneity = list(
+      i2 = data$I2[1],
+      tau2 = data$tau2[1],
+      p = data$pval.Q[1]
+    )
   )
-  return(ret2)
+
+  # add all records
+  ret$stus <- lapply(seq_along(data$studlab), function(i) {
+    list(
+      name = data$studlab[i],
+      E = data$event[i],
+      N = data$n[i],
+      TE = data$TE[i],
+      seTE = data$seTE[i],
+      lower = data$lower[i],
+      upper = data$upper[i],
+
+      bt_TE = data$bt.TE[i],
+      bt_lower = data$bt.lower[i],
+      bt_upper = data$bt.upper[i],
+
+      w_random = data$w.random[i] / sum(data$w.random),
+      w_fixed = data$w.fixed[i] / sum(data$w.fixed)
+    )
+  })
+
+  return(ret)
 }

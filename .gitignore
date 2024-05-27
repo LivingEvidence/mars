@@ -49,5 +49,6 @@ po/*~
 rsconnect/
 
 *.out
+test.json
 
 .vscode/

@@ -99,3 +99,33 @@ backtransf_pwma <- function(rst) {
 
   return(rst)
 }
+
+meta_trans_metaprop <- function(ret, cfg){
+  data <- ret$incdma
+  ret2 = list(
+    model = list(
+      random = list(
+        name = "Random effects model",
+        E = sum(data$event)[],
+        N = sum(data$n),
+        TE = data$TE.random,
+        seTE = data$seTE.random,
+        lower = data$lower.random,
+        upper = data$upper.random,
+
+        bt_TE = data$bt.TE.random,
+        bt_lower = data$bt.lower.random,
+        bt_upper = data$bt.upper.random,
+        w = 1
+      )
+    ),
+    heterogeneity = list(
+      i2 = data$I2[1],
+      tau2 = data$tau2[1],
+      p = data$pval.Q[1]
+    ),
+    stus = list()
+  )
+
+  return(ret2)
+}
