@@ -88,6 +88,11 @@ function(spec){
 # Helper services
 ###########################################################
 
+#' Backtransform
+#' 
+#' @description Backtransform the results of a pairwise meta-analysis
+#' @param rst The result of the pairwise meta-analysis
+#' @return The result of the pairwise meta-analysis with backtransformed values
 backtransf_pwma <- function(rst) {
   rst$is.metabind <- inherits(rst, "metabind")
   if (rst$sm == "IRFT") {
