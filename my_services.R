@@ -131,3 +131,17 @@ backtransf_pwma <- function(rst) {
 
   return(rst)
 }
+
+
+#' Reformat the results of a pairwise meta-analysis
+#' @description Reformat the results of a pairwise meta-analysis
+#' @param ret The result of the pairwise meta-analysis
+#' @return The reformatted result of the pairwise meta-analysis
+reformat <- function(ret){
+  ret2 = list(
+    model = list(),
+    stus = list(),
+    rs = list()
+  )
+  return(ret2)
+}
